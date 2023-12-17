@@ -1,9 +1,6 @@
 #!/usr/bin/env bash
 
-CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-
-default_key_bindings_goto="g"
-tmux_option_goto="@sessionist-goto"
+CURRENT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 default_key_bindings_alternate="S"
 tmux_option_alternate="@sessionist-alternate"
@@ -17,22 +14,10 @@ tmux_option_promote_pane="@sessionist-promote-pane"
 default_key_bindings_promote_window="C-@"
 tmux_option_promote_window="@sessionist-promote-window"
 
-default_key_bindings_join_pane="t"
-tmux_option_join_pane="@sessionist-join-pane"
-
 default_key_bindings_kill_session="X"
 tmux_option_kill_session="@sessionist-kill-session"
 
 source "$CURRENT_DIR/scripts/helpers.sh"
-
-# Multiple bindings can be set. Default binding is "g".
-set_goto_session_bindings() {
-	local key_bindings=$(get_tmux_option "$tmux_option_goto" "$default_key_bindings_goto")
-	local key
-	for key in $key_bindings; do
-		tmux bind "$key" run "$CURRENT_DIR/scripts/goto_session.sh"
-	done
-}
 
 set_alternate_session_binding() {
 	local key_bindings=$(get_tmux_option "$tmux_option_alternate" "$default_key_bindings_alternate")
@@ -90,18 +75,6 @@ f $break_pane_flag
 KEY_FLAGS
 }
 
-# "Join" the marked pane to the current session/window
-set_join_pane_binding() {
-	local key_bindings="$(get_tmux_option "$tmux_option_join_pane" "$default_key_bindings_join_pane")"
-	local key
-	local secondary_key_table="join-pane"
-	local break_pane_flag="-b"
-	set_join_pane_secondary_bindings "$secondary_key_table" "$break_pane_flag"
-	for key in "$key_bindings"; do
-		tmux bind "$key" run "$CURRENT_DIR/scripts/join_pane.sh '$secondary_key_table' '$break_pane_flag'"
-	done
-}
-
 set_kill_session_binding() {
 	local key_bindings=$(get_tmux_option "$tmux_option_kill_session" "$default_key_bindings_kill_session")
 	local key
@@ -111,12 +84,10 @@ set_kill_session_binding() {
 }
 
 main() {
-	set_goto_session_bindings
 	set_alternate_session_binding
 	set_new_session_binding
 	set_promote_pane_binding
 	set_promote_window_binding
-	set_join_pane_binding
 	set_kill_session_binding
 }
 main
